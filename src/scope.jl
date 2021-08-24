@@ -336,7 +336,12 @@ end
 Set observable without synchronizing with the counterpart on the browser
 """
 function set_nosync(ob, val)
-    Observables.setexcludinghandlers(ob, val, x -> !(x isa SyncCallback))
+    if isdefined(Observables, :setexcludinghandlers!)
+        Observables.setexcludinghandlers!(ob, val)
+        Observables.notify(ob)
+    else
+        Observables.setexcludinghandlers(ob, val, x -> !(x isa SyncCallback))
+    end
 end
 
 const lifecycle_commands = ["scope_created"]
